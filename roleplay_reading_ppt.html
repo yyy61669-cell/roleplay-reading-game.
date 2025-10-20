@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Clubs - Role-play Reading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .game-rules {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .rule-item {
+            font-size: 1.3em;
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .character-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .character-card:nth-child(2) {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .character-card:nth-child(3) {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .character-card p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .notice-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .notice {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-top: 5px solid #667eea;
+        }
+
+        .notice h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .notice p {
+            margin: 8px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .notice strong {
+            color: #333;
+        }
+
+        .keyword {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .worksheet {
+            background: #f8f9ff;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .worksheet-item {
+            margin: 25px 0;
+            font-size: 1.2em;
+        }
+
+        .worksheet-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .worksheet-item input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .discussion-box {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .discussion-box h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .discussion-box ol {
+            font-size: 1.2em;
+            line-height: 2;
+            margin-left: 30px;
+        }
+
+        .speech-bubble {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            position: relative;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .nav-btn.prev {
+            background: #6c757d;
+            color: white;
+        }
+
+        .nav-btn.next {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.2em;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .highlight-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .chinese-note {
+            color: #999;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .instruction-box {
+            background: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .instruction-box p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .text-display {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 3px solid #667eea;
+        }
+
+        .text-title {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .club-poster {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .club-poster h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .club-poster p {
+            line-height: 1.7;
+            font-size: 1em;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Opening -->
+        <div class="slide active">
+            <div class="slide-number">1/6</div>
+            <h1>🎭 Role-play Game</h1>
+            <h1 style="font-size: 2.5em; color: #667eea;">Find Who You Are!</h1>
+            <div class="subtitle">Mission: Help new students find their clubs!</div>
+            <div style="text-align: center; margin-top: 60px;">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Ccircle cx='150' cy='150' r='140' fill='%23667eea' opacity='0.2'/%3E%3Ctext x='150' y='180' font-size='120' text-anchor='middle' fill='%23667eea'%3E🕵️%3C/text%3E%3C/svg%3E" alt="detective">
+            </div>
+        </div>
+
+        <!-- Slide 2: Game Rules -->
+        <div class="slide">
+            <div class="slide-number">2/6</div>
+            <h2>📜 Game Rules <span class="chinese-note">游戏规则</span></h2>
+            <div class="game-rules">
+                <div class="rule-item"><span class="emoji">1️⃣</span>Each group gets 1 character card <span class="chinese-note">每组抽取一张角色卡</span></div>
+                <div class="rule-item"><span class="emoji">2️⃣</span>Read the school club posters carefully <span class="chinese-note">仔细阅读学校社团海报</span></div>
+                <div class="rule-item"><span class="emoji">3️⃣</span>Use <span class="keyword">scanning skills</span> to find keywords <span class="chinese-note">用扫读技巧找关键词</span></div>
+                <div class="rule-item"><span class="emoji">4️⃣</span>Figure out your character's information: <span class="chinese-note">推理出你的角色信息：</span></div>
+                <div class="highlight-box" style="margin-left: 60px; margin-top: 20px;">
+                    <p style="font-size: 1.3em; line-height: 2;">
+                        <strong>• WHAT</strong> - What activities? <span class="chinese-note">参加什么活动</span><br>
+                        <strong>• WHERE</strong> - Which place? <span class="chinese-note">去哪里</span><br>
+                        <strong>• WHEN</strong> - What time? <span class="chinese-note">什么时间</span><br>
+                        <strong>• WHO</strong> - Who to contact? <span class="chinese-note">联系谁</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Character Cards -->
+        <div class="slide">
+            <div class="slide-number">3/6</div>
+            <h2>🎴 Character Cards <span class="chinese-note">角色卡</span></h2>
+            <div class="character-cards">
+                <div class="character-card">
+                    <h3>👧 Character A</h3>
+                    <p><strong>Name:</strong> Mary</p>
+                    <p><strong>Hobby:</strong> Reading stories</p>
+                    <p><strong>Goal:</strong> Want to talk about books</p>
+                </div>
+                <div class="character-card">
+                    <h3>👦 Character B</h3>
+                    <p><strong>Name:</strong> Peter</p>
+                    <p><strong>Hobby:</strong> Watching insects</p>
+                    <p><strong>Goal:</strong> Want to enjoy nature</p>
+                </div>
+                <div class="character-card">
+                    <h3>👧 Character C</h3>
+                    <p><strong>Name:</strong> Lisa</p>
+                    <p><strong>Hobby:</strong> Cooking food</p>
+                    <p><strong>Goal:</strong> Want to learn new dishes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Reading Material (No Highlights) -->
+        <div class="slide">
+            <div class="slide-number">4/6</div>
+            <h2>📖 Reading Time <span class="chinese-note">阅读时间</span></h2>
+            <div class="instruction-box">
+                <p><strong>Task:</strong> Read the THREE club posters. Use scanning to find keywords that match your character! <span class="chinese-note">阅读三个社团海报，用扫读找到与你角色匹配的关键词！</span></p>
+                <p style="margin-top: 10px;"><strong>Time:</strong> 5 minutes <span class="chinese-note">时间：5分钟</span></p>
+            </div>
+            <div class="text-display">
+                <div class="text-title">We Want You!</div>
+                
+                <div class="club-poster">
+                    <h4>🍰 Cooking Club</h4>
+                    <p>Do you love Chinese food? Can you cook? Join our cooking club! Let's learn to cook your favourite Chinese food. Mapo tofu, beef noodles, jiaozi, baozi ... You name it! You can soon cook for your family. Join us in Room 303 at 4:30 p.m. on Wednesdays.</p>
+                    <p><strong>Email Ma Xiaohui at</strong> maxh.food@happymail.com for more information.</p>
+                </div>
+
+                <div class="club-poster">
+                    <h4>📚 Book Club</h4>
+                    <p>Do you like reading? Join our book club! It's more than reading. We act out stories, talk about books, and make new friends. Books can open your mind and make you think. Come to the library on Tuesdays after school and fall in love with books!</p>
+                    <p><strong>Email Bill at</strong> billwhite@happymail.com for more information.</p>
+                </div>
+
+                <div class="club-poster">
+                    <h4>🌳 Nature Club</h4>
+                    <p>Do you love nature? Can you take good photos? Come hiking with us every Sunday afternoon! We watch birds, take photos, and collect plants and insects. We also visit nature parks. Discover wildlife right under your nose!</p>
+                    <p><strong>Email Jenny at</strong> jenny66@happymail.com for more information.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Detective Worksheet -->
+        <div class="slide">
+            <div class="slide-number">5/6</div>
+            <h2>🕵️ Detective Worksheet <span class="chinese-note">侦探推理表</span></h2>
+            <div class="worksheet">
+                <div class="worksheet-item">
+                    <label>My character is: <span class="chinese-note">我的角色是</span></label>
+                    <input type="text" placeholder="e.g., Mary">
+                </div>
+                <div class="worksheet-item">
+                    <label>Keywords I found: <span class="chinese-note">我找到的关键词</span></label>
+                    <input type="text" placeholder="e.g., reading, stories, books">
+                </div>
+                <div class="worksheet-item">
+                    <label>📍 WHERE (Place): <span class="chinese-note">地点</span></label>
+                    <input type="text" placeholder="e.g., library">
+                </div>
+                <div class="worksheet-item">
+                    <label>⏰ WHEN (Time): <span class="chinese-note">时间</span></label>
+                    <input type="text" placeholder="e.g., Tuesdays after school">
+                </div>
+                <div class="worksheet-item">
+                    <label>🎯 WHAT (Activities): <span class="chinese-note">活动</span></label>
+                    <input type="text" placeholder="e.g., act out stories, talk about books">
+                </div>
+                <div class="worksheet-item">
+                    <label>👤 WHO (Contact): <span class="chinese-note">联系人</span></label>
+                    <input type="text" placeholder="e.g., billwhite@happymail.com">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Group Sharing -->
+        <div class="slide">
+            <div class="slide-number">6/6</div>
+            <h2>💬 Group Sharing <span class="chinese-note">小组分享</span></h2>
+            <div class="discussion-box">
+                <h3>Share your detective work: <span class="chinese-note">分享你的推理结果</span></h3>
+                <ol>
+                    <li>One group shares their answer <span class="chinese-note">一组分享答案</span></li>
+                    <li>Tell us which keywords you found <span class="chinese-note">说出找到的关键词</span></li>
+                    <li>Explain your reasoning <span class="chinese-note">解释推理过程</span></li>
+                </ol>
+                <div class="speech-bubble">
+                    <strong>📢 Speaking Template: <span class="chinese-note">话术模板</span></strong><br><br>
+                    "I am <u>Mary</u>. I like <u>reading stories</u>.<br>
+                    I found the keywords '<span class="keyword">reading</span>', '<span class="keyword">stories</span>', and '<span class="keyword">talk about books</span>' in the <u>Book Club</u> poster.<br>
+                    So I will go to the <u>library</u> on <u>Tuesdays after school</u> to <u>act out stories and discuss books</u>.<br>
+                    I will contact <u>Bill at billwhite@happymail.com</u>."
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn prev" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn next" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.querySelector('.nav-btn.prev');
+        const nextBtn = document.querySelector('.nav-btn.next');
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
